@@ -1,0 +1,103 @@
+<html>
+<head>
+<title>predict.py</title>
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+<style type="text/css">
+.s0 { color: #ed864a;}
+.s1 { color: #ebebeb;}
+.s2 { color: #7ec3e6;}
+.s3 { color: #54b33e;}
+.s4 { color: #ed864a; font-weight: bold;}
+</style>
+</head>
+<body bgcolor="#131314">
+<table CELLSPACING=0 CELLPADDING=5 COLS=1 WIDTH="100%" BGCOLOR="#606060" >
+<tr><td><center>
+<font face="Arial, Helvetica" color="#000000">
+predict.py</font>
+</center></td></tr></table>
+<pre><span class="s0">from </span><span class="s1">sklearn.feature_extraction.text </span><span class="s0">import </span><span class="s1">CountVectorizer</span>
+<span class="s0">from </span><span class="s1">sklearn.naive_bayes </span><span class="s0">import </span><span class="s1">MultinomialNB</span>
+
+<span class="s2"># Define the training data</span>
+<span class="s1">conversations = [</span>
+   <span class="s1">{</span><span class="s3">'text'</span><span class="s1">: </span><span class="s3">'I had a great day today!'</span><span class="s4">, </span><span class="s3">'sentiment'</span><span class="s1">: </span><span class="s3">'positive'</span><span class="s1">}</span><span class="s4">,</span>
+    <span class="s1">{</span><span class="s3">'text'</span><span class="s1">: </span><span class="s3">'I feel so sad right now'</span><span class="s4">, </span><span class="s3">'sentiment'</span><span class="s1">: </span><span class="s3">'negative'</span><span class="s1">}</span><span class="s4">,</span>
+    <span class="s1">{</span><span class="s3">'text'</span><span class="s1">: </span><span class="s3">'This pizza is amazing'</span><span class="s4">, </span><span class="s3">'sentiment'</span><span class="s1">: </span><span class="s3">'positive'</span><span class="s1">}</span><span class="s4">,</span>
+    <span class="s1">{</span><span class="s3">'text'</span><span class="s1">: </span><span class="s3">'I hate dealing with customer service'</span><span class="s4">, </span><span class="s3">'sentiment'</span><span class="s1">: </span><span class="s3">'negative'</span><span class="s1">}</span><span class="s4">,</span>
+    <span class="s1">{</span><span class="s3">'text'</span><span class="s1">: </span><span class="s3">'I am so excited for the concert tonight'</span><span class="s4">, </span><span class="s3">'sentiment'</span><span class="s1">: </span><span class="s3">'positive'</span><span class="s1">}</span><span class="s4">,</span>
+    <span class="s1">{</span><span class="s3">'text'</span><span class="s1">: </span><span class="s3">'I feel really frustrated with my boss'</span><span class="s4">, </span><span class="s3">'sentiment'</span><span class="s1">: </span><span class="s3">'negative'</span><span class="s1">}</span><span class="s4">,</span>
+    <span class="s1">{</span><span class="s3">'text'</span><span class="s1">: </span><span class="s3">'I love this book, it</span><span class="s0">\'</span><span class="s3">s so inspiring'</span><span class="s4">, </span><span class="s3">'sentiment'</span><span class="s1">: </span><span class="s3">'positive'</span><span class="s1">}</span><span class="s4">,</span>
+    <span class="s1">{</span><span class="s3">'text'</span><span class="s1">: </span><span class="s3">'I can</span><span class="s0">\'</span><span class="s3">t stand this rainy weather'</span><span class="s4">, </span><span class="s3">'sentiment'</span><span class="s1">: </span><span class="s3">'negative'</span><span class="s1">}</span><span class="s4">,</span>
+    <span class="s1">{</span><span class="s3">'text'</span><span class="s1">: </span><span class="s3">'I feel so grateful for my family'</span><span class="s4">, </span><span class="s3">'sentiment'</span><span class="s1">: </span><span class="s3">'positive'</span><span class="s1">}</span><span class="s4">,</span>
+    <span class="s1">{</span><span class="s3">'text'</span><span class="s1">: </span><span class="s3">'I am so disappointed with the service at this restaurant'</span><span class="s4">, </span><span class="s3">'sentiment'</span><span class="s1">: </span><span class="s3">'negative'</span><span class="s1">}</span><span class="s4">,</span>
+    <span class="s1">{</span><span class="s3">'text'</span><span class="s1">: </span><span class="s3">'I just got a promotion at work, I am thrilled'</span><span class="s4">, </span><span class="s3">'sentiment'</span><span class="s1">: </span><span class="s3">'positive'</span><span class="s1">}</span><span class="s4">,</span>
+    <span class="s1">{</span><span class="s3">'text'</span><span class="s1">: </span><span class="s3">'I feel so lonely and sad'</span><span class="s4">, </span><span class="s3">'sentiment'</span><span class="s1">: </span><span class="s3">'negative'</span><span class="s1">}</span><span class="s4">,</span>
+    <span class="s1">{</span><span class="s3">'text'</span><span class="s1">: </span><span class="s3">'I had a great time at the beach today'</span><span class="s4">, </span><span class="s3">'sentiment'</span><span class="s1">: </span><span class="s3">'positive'</span><span class="s1">}</span><span class="s4">,</span>
+    <span class="s1">{</span><span class="s3">'text'</span><span class="s1">: </span><span class="s3">'I am so stressed with all this work'</span><span class="s4">, </span><span class="s3">'sentiment'</span><span class="s1">: </span><span class="s3">'negative'</span><span class="s1">}</span><span class="s4">,</span>
+    <span class="s1">{</span><span class="s3">'text'</span><span class="s1">: </span><span class="s3">'I love spending time with my friends'</span><span class="s4">, </span><span class="s3">'sentiment'</span><span class="s1">: </span><span class="s3">'positive'</span><span class="s1">}</span><span class="s4">,</span>
+    <span class="s1">{</span><span class="s3">'text'</span><span class="s1">: </span><span class="s3">'I am so angry with my roommate'</span><span class="s4">, </span><span class="s3">'sentiment'</span><span class="s1">: </span><span class="s3">'negative'</span><span class="s1">}</span><span class="s4">,</span>
+    <span class="s1">{</span><span class="s3">'text'</span><span class="s1">: </span><span class="s3">'I feel so content and peaceful'</span><span class="s4">, </span><span class="s3">'sentiment'</span><span class="s1">: </span><span class="s3">'positive'</span><span class="s1">}</span><span class="s4">,</span>
+    <span class="s1">{</span><span class="s3">'text'</span><span class="s1">: </span><span class="s3">'I hate it when people are always late'</span><span class="s4">, </span><span class="s3">'sentiment'</span><span class="s1">: </span><span class="s3">'negative'</span><span class="s1">}</span><span class="s4">,</span>
+    <span class="s1">{</span><span class="s3">'text'</span><span class="s1">: </span><span class="s3">'I feel so excited for my vacation next week'</span><span class="s4">, </span><span class="s3">'sentiment'</span><span class="s1">: </span><span class="s3">'positive'</span><span class="s1">}</span><span class="s4">,</span>
+    <span class="s1">{</span><span class="s3">'text'</span><span class="s1">: </span><span class="s3">'I can</span><span class="s0">\'</span><span class="s3">t stand the traffic on this road'</span><span class="s4">, </span><span class="s3">'sentiment'</span><span class="s1">: </span><span class="s3">'negative'</span><span class="s1">}</span><span class="s4">,</span>
+    <span class="s1">{</span><span class="s3">'text'</span><span class="s1">: </span><span class="s3">'I am so happy with my new car'</span><span class="s4">, </span><span class="s3">'sentiment'</span><span class="s1">: </span><span class="s3">'positive'</span><span class="s1">}</span><span class="s4">,</span>
+    <span class="s1">{</span><span class="s3">'text'</span><span class="s1">: </span><span class="s3">'I feel so overwhelmed with all these responsibilities'</span><span class="s4">, </span><span class="s3">'sentiment'</span><span class="s1">: </span><span class="s3">'negative'</span><span class="s1">}</span><span class="s4">,</span>
+    <span class="s1">{</span><span class="s3">'text'</span><span class="s1">: </span><span class="s3">'I love going to the movies with my family'</span><span class="s4">, </span><span class="s3">'sentiment'</span><span class="s1">: </span><span class="s3">'positive'</span><span class="s1">}</span><span class="s4">,</span>
+    <span class="s1">{</span><span class="s3">'text'</span><span class="s1">: </span><span class="s3">'I am so annoyed with this loud music'</span><span class="s4">, </span><span class="s3">'sentiment'</span><span class="s1">: </span><span class="s3">'negative'</span><span class="s1">}</span><span class="s4">,</span>
+    <span class="s1">{</span><span class="s3">'text'</span><span class="s1">: </span><span class="s3">'I feel so blessed to have such wonderful friends'</span><span class="s4">, </span><span class="s3">'sentiment'</span><span class="s1">: </span><span class="s3">'positive'</span><span class="s1">}</span><span class="s4">,</span>
+    <span class="s1">{</span><span class="s3">'text'</span><span class="s1">: </span><span class="s3">'I can</span><span class="s0">\'</span><span class="s3">t stand this cold weather'</span><span class="s4">, </span><span class="s3">'sentiment'</span><span class="s1">: </span><span class="s3">'negative'</span><span class="s1">}</span><span class="s4">,</span>
+    <span class="s1">{</span><span class="s3">'text'</span><span class="s1">: </span><span class="s3">'I am so proud of my daughter for graduating'</span><span class="s4">, </span><span class="s3">'sentiment'</span><span class="s1">: </span><span class="s3">'positive'</span><span class="s1">}</span><span class="s4">,</span>
+    <span class="s1">{</span><span class="s3">'text'</span><span class="s1">: </span><span class="s3">'I feel so discouraged with my progress'</span><span class="s4">, </span><span class="s3">'sentiment'</span><span class="s1">: </span><span class="s3">'negative'</span><span class="s1">}</span><span class="s4">,</span>
+    <span class="s1">{</span><span class="s3">'text'</span><span class="s1">: </span><span class="s3">'I love spending time in nature'</span><span class="s4">, </span><span class="s3">'sentiment'</span><span class="s1">: </span><span class="s3">'positive'</span><span class="s1">}</span><span class="s4">,</span>
+    <span class="s1">{</span><span class="s3">'text'</span><span class="s1">: </span><span class="s3">'I am so frustrated with this slow internet connection'</span><span class="s4">, </span><span class="s3">'sentiment'</span><span class="s1">: </span><span class="s3">'negative'</span><span class="s1">}</span><span class="s4">,</span>
+    <span class="s1">{</span><span class="s3">'text'</span><span class="s1">: </span><span class="s3">'I feel so excited to start this new project'</span><span class="s4">, </span><span class="s3">'sentiment'</span><span class="s1">: </span><span class="s3">'positive'</span><span class="s1">}</span><span class="s4">,</span>
+    <span class="s1">{</span><span class="s3">'text'</span><span class="s1">: </span><span class="s3">'I hate it when people don</span><span class="s0">\'</span><span class="s3">t keep their promises'</span><span class="s4">, </span><span class="s3">'sentiment'</span><span class="s1">: </span><span class="s3">'negative'</span><span class="s1">}</span><span class="s4">,</span>
+    <span class="s1">{</span><span class="s3">'text'</span><span class="s1">: </span><span class="s3">'I feel so relieved to have finished this task'</span><span class="s4">, </span><span class="s3">'sentiment'</span><span class="s1">: </span><span class="s3">'positive'</span><span class="s1">}</span><span class="s4">,</span>
+    <span class="s1">{</span><span class="s3">'text'</span><span class="s1">: </span><span class="s3">'I am so upset with my boss for not giving me a raise'</span><span class="s4">, </span><span class="s3">'sentiment'</span><span class="s1">: </span><span class="s3">'negative'</span><span class="s1">}</span><span class="s4">,</span>
+     <span class="s1">{</span><span class="s3">'text'</span><span class="s1">: </span><span class="s3">'this feels good/comfortable/cute'</span><span class="s4">, </span><span class="s3">'sentiment'</span><span class="s1">: </span><span class="s3">'positive'</span><span class="s1">}</span><span class="s4">,</span>
+     <span class="s1">{</span><span class="s3">'text'</span><span class="s1">: </span><span class="s3">'what are you doing'</span><span class="s4">, </span><span class="s3">'sentiment'</span><span class="s1">: </span><span class="s3">'negative'</span><span class="s1">}</span><span class="s4">,</span>
+     <span class="s1">{</span><span class="s3">'text'</span><span class="s1">: </span><span class="s3">'WHAT ARE YOU DOING ?'</span><span class="s4">, </span><span class="s3">'sentiment'</span><span class="s1">: </span><span class="s3">'postive'</span><span class="s1">}</span><span class="s4">,</span>
+
+
+    <span class="s2"># add more conversations and their outcomes here</span>
+<span class="s1">]</span>
+
+<span class="s2"># Extract the text and outcomes from the training data</span>
+<span class="s1">texts = [conv[</span><span class="s3">'text'</span><span class="s1">] </span><span class="s0">for </span><span class="s1">conv </span><span class="s0">in </span><span class="s1">conversations]</span>
+<span class="s1">outcomes = [conv[</span><span class="s3">'sentiment'</span><span class="s1">] </span><span class="s0">for </span><span class="s1">conv </span><span class="s0">in </span><span class="s1">conversations]</span>
+
+<span class="s2"># Vectorize the text data using a bag-of-words approach</span>
+<span class="s1">vectorizer = CountVectorizer()</span>
+<span class="s1">X = vectorizer.fit_transform(texts)</span>
+
+<span class="s2"># Train a naive Bayes classifier on the vectorized data</span>
+<span class="s1">clf = MultinomialNB()</span>
+<span class="s1">clf.fit(X</span><span class="s4">, </span><span class="s1">outcomes)</span>
+
+<span class="s2"># Define some new conversation data to make predictions on</span>
+<span class="s1">new_conversations = [</span>
+    <span class="s3">'thats the spirit'</span><span class="s4">,</span>
+    <span class="s3">'I need some help with this problem.'</span><span class="s4">,</span>
+    <span class="s3">'Can I talk to a manager?'</span><span class="s4">,</span>
+    <span class="s3">'are you stupid?'</span><span class="s4">,</span>
+    <span class="s3">'you are cute'</span><span class="s4">,</span>
+
+
+    <span class="s2"># add more conversation text here</span>
+<span class="s1">]</span>
+
+<span class="s2"># Vectorize the new conversation data using the same vectorizer</span>
+<span class="s1">new_X = vectorizer.transform(new_conversations)</span>
+
+<span class="s2"># Make predictions on the new conversation data using the trained model</span>
+<span class="s1">predicted_outcomes = clf.predict(new_X)</span>
+
+<span class="s2"># Print the predicted outcomes for each new conversation</span>
+<span class="s0">for </span><span class="s1">i</span><span class="s4">, </span><span class="s1">convo </span><span class="s0">in </span><span class="s1">enumerate(new_conversations):</span>
+    <span class="s1">print(</span><span class="s3">'Conversation:'</span><span class="s4">, </span><span class="s1">convo)</span>
+    <span class="s1">print(</span><span class="s3">'Predicted outcome:'</span><span class="s4">, </span><span class="s1">predicted_outcomes[i])</span>
+
+</pre>
+</body>
+</html>
